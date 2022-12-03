@@ -67,7 +67,7 @@ fn part1(input: &Vec<String>) -> i32 {
     input.into_iter().fold(0, |acc, line| {
         let chars: Vec<char> = line.chars().collect();
         match chars.as_slice() {
-            [opponent, _, me] => {
+            [opponent@('A'|'B'|'C') , _, me@('X'|'Y'|'Z')] => {
                 let opponent_move = Move::from_char(*opponent);
                 let my_move = Move::from_char(*me);
                 if my_move.wins_to() == opponent_move {
@@ -87,7 +87,7 @@ fn part2(input: &Vec<String>) -> i32 {
     input.into_iter().fold(0, |acc, line| {
         let chars: Vec<char> = line.chars().collect();
         match chars.as_slice() {
-            [opponent, _, desired_outcome] => {
+            [opponent@('A'|'B'|'C') , _, desired_outcome@('X'|'Y'|'Z')] => {
                 let opponent_move = Move::from_char(*opponent);
                 match Outcome::from_char(*desired_outcome) {
                     Outcome::Win => acc + opponent_move.loses_to().score() + 6,

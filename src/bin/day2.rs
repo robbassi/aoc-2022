@@ -1,7 +1,9 @@
 use std::io;
 use std::io::BufRead;
+use strum::{EnumCount};
+use strum_macros::{EnumCount as EnumCountMacro};
 
-#[derive(Clone,Copy,PartialEq)]
+#[derive(Clone,Copy,PartialEq,EnumCountMacro)]
 enum Selection {
     Rock,
     Paper,
@@ -11,13 +13,13 @@ enum Selection {
 enum Outcome { Win, Lose, Draw }
 
 /* These are indexed by Selection values */
-const SCORE: [i32; 3] = [1,2,3];
-const BEATS: [Selection; 3] = [
+const SCORE: [i32; Selection::COUNT] = [1,2,3];
+const BEATS: [Selection; Selection::COUNT] = [
     Selection::Scissors,
     Selection::Rock,
     Selection::Paper
 ];
-const LOSES: [Selection; 3] = [
+const LOSES: [Selection; Selection::COUNT] = [
     Selection::Paper,
     Selection::Scissors,
     Selection::Rock

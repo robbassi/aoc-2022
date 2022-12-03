@@ -1,0 +1,14 @@
+[package]
+name = "aoc-2022"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+strum = "0.24"
+strum_macros = "0.24"
+
+[[bin]]
+name = "day1"
+
+[[bin]]
+name = "day2"

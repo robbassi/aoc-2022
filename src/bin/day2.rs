@@ -1,29 +1,27 @@
 use std::io;
 use std::io::BufRead;
-use strum::{EnumCount};
-use strum_macros::{EnumCount as EnumCountMacro};
+use strum::EnumCount;
+use strum_macros::EnumCount as EnumCountMacro;
 
-#[derive(Clone,Copy,PartialEq,EnumCountMacro)]
+#[derive(Clone, Copy, PartialEq, EnumCountMacro)]
 enum Selection {
     Rock,
     Paper,
-    Scissors
+    Scissors,
 }
 
-enum Outcome { Win, Lose, Draw }
+enum Outcome {
+    Win,
+    Lose,
+    Draw,
+}
 
 /* These are indexed by Selection values */
-const SCORE: [i32; Selection::COUNT] = [1,2,3];
-const BEATS: [Selection; Selection::COUNT] = [
-    Selection::Scissors,
-    Selection::Rock,
-    Selection::Paper
-];
-const LOSES: [Selection; Selection::COUNT] = [
-    Selection::Paper,
-    Selection::Scissors,
-    Selection::Rock
-];
+const SCORE: [i32; Selection::COUNT] = [1, 2, 3];
+const BEATS: [Selection; Selection::COUNT] =
+    [Selection::Scissors, Selection::Rock, Selection::Paper];
+const LOSES: [Selection; Selection::COUNT] =
+    [Selection::Paper, Selection::Scissors, Selection::Rock];
 
 #[inline(always)]
 fn parse_selection(character: char) -> Selection {
@@ -34,7 +32,7 @@ fn parse_selection(character: char) -> Selection {
         'X' => Selection::Rock,
         'Y' => Selection::Paper,
         'Z' => Selection::Scissors,
-        _ => panic!("bad input!")
+        _ => panic!("bad input!"),
     }
 }
 
@@ -44,7 +42,7 @@ fn parse_outcome(character: char) -> Outcome {
         'X' => Outcome::Lose,
         'Y' => Outcome::Draw,
         'Z' => Outcome::Win,
-        _ => panic!("bad input!")
+        _ => panic!("bad input!"),
     }
 }
 
@@ -73,10 +71,8 @@ fn part2(input: &Vec<String>) -> i32 {
             Outcome::Win => {
                 let index = LOSES[opponent_index] as usize;
                 acc + SCORE[index] + 6
-            },
-            Outcome::Draw => {
-                acc + SCORE[opponent_index] + 3
-            },
+            }
+            Outcome::Draw => acc + SCORE[opponent_index] + 3,
             Outcome::Lose => {
                 let index = BEATS[opponent_index] as usize;
                 acc + SCORE[index]

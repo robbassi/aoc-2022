@@ -64,18 +64,18 @@ impl Outcome {
 }
 
 fn part1(input: &Vec<String>) -> i32 {
-    input.into_iter().fold(0, |acc, line| {
+    input.into_iter().fold(0, |score, line| {
         let chars: Vec<char> = line.chars().collect();
         match chars.as_slice() {
             [opponent@('A'|'B'|'C') , _, me@('X'|'Y'|'Z')] => {
                 let opponent_move = Move::from_char(*opponent);
                 let my_move = Move::from_char(*me);
                 if my_move.wins_to() == opponent_move {
-                    acc + my_move.score() + 6
+                    score + my_move.score() + 6
                 } else if opponent_move == my_move {
-                    acc + my_move.score() + 3
+                    score + my_move.score() + 3
                 } else {
-                    acc + my_move.score()
+                    score + my_move.score()
                 }
             }
             _ => panic!("bad input, expecting: {{A,B,C}} {{X,Y,Z}}"),
@@ -84,15 +84,15 @@ fn part1(input: &Vec<String>) -> i32 {
 }
 
 fn part2(input: &Vec<String>) -> i32 {
-    input.into_iter().fold(0, |acc, line| {
+    input.into_iter().fold(0, |score, line| {
         let chars: Vec<char> = line.chars().collect();
         match chars.as_slice() {
             [opponent@('A'|'B'|'C') , _, desired_outcome@('X'|'Y'|'Z')] => {
                 let opponent_move = Move::from_char(*opponent);
                 match Outcome::from_char(*desired_outcome) {
-                    Outcome::Win => acc + opponent_move.loses_to().score() + 6,
-                    Outcome::Draw => acc + opponent_move.score() + 3,
-                    Outcome::Lose => acc + opponent_move.wins_to().score(),
+                    Outcome::Win => score + opponent_move.loses_to().score() + 6,
+                    Outcome::Draw => score + opponent_move.score() + 3,
+                    Outcome::Lose => score + opponent_move.wins_to().score(),
                 }
             }
             _ => panic!("bad input, expecting: {{A,B,C}} {{X,Y,Z}}"),

@@ -32,6 +32,18 @@ impl Move {
             Move::Scissors => Move::Rock,
         }
     }
+
+    fn from_char(character: char) -> Move {
+        match character {
+            'A' => Move::Rock,
+            'B' => Move::Paper,
+            'C' => Move::Scissors,
+            'X' => Move::Rock,
+            'Y' => Move::Paper,
+            'Z' => Move::Scissors,
+            _ => panic!("bad input!"),
+        }
+    }
 }
 
 enum Outcome {
@@ -40,34 +52,22 @@ enum Outcome {
     Draw,
 }
 
-#[inline(always)]
-fn parse_selection(character: char) -> Move {
-    match character {
-        'A' => Move::Rock,
-        'B' => Move::Paper,
-        'C' => Move::Scissors,
-        'X' => Move::Rock,
-        'Y' => Move::Paper,
-        'Z' => Move::Scissors,
-        _ => panic!("bad input!"),
-    }
-}
-
-#[inline(always)]
-fn parse_outcome(character: char) -> Outcome {
-    match character {
-        'X' => Outcome::Lose,
-        'Y' => Outcome::Draw,
-        'Z' => Outcome::Win,
-        _ => panic!("bad input!"),
+impl Outcome {
+    fn from_char(character: char) -> Outcome {
+        match character {
+            'X' => Outcome::Lose,
+            'Y' => Outcome::Draw,
+            'Z' => Outcome::Win,
+            _ => panic!("bad input!"),
+        }
     }
 }
 
 fn part1(input: &Vec<String>) -> i32 {
     input.into_iter().fold(0, |acc, line| {
         let chars: Vec<char> = line.as_str().chars().collect();
-        let opponent_move = parse_selection(chars[0]);
-        let my_move = parse_selection(chars[2]);
+        let opponent_move = Move::from_char(chars[0]);
+        let my_move = Move::from_char(chars[2]);
         if my_move.wins_to() == opponent_move {
             acc + my_move.score() + 6
         } else if opponent_move == my_move {
@@ -81,8 +81,8 @@ fn part1(input: &Vec<String>) -> i32 {
 fn part2(input: &Vec<String>) -> i32 {
     input.into_iter().fold(0, |acc, line| {
         let chars: Vec<char> = line.as_str().chars().collect();
-        let opponent_move = parse_selection(chars[0]);
-        match parse_outcome(chars[2]) {
+        let opponent_move = Move::from_char(chars[0]);
+        match Outcome::from_char(chars[2]) {
             Outcome::Win => acc + opponent_move.loses_to().score() + 6,
             Outcome::Draw => acc + opponent_move.score() + 3,
             Outcome::Lose => acc + opponent_move.wins_to().score(),

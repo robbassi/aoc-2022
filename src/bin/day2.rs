@@ -1,13 +1,37 @@
 use std::io;
 use std::io::BufRead;
-use strum::EnumCount;
-use strum_macros::EnumCount as EnumCountMacro;
 
-#[derive(Clone, Copy, PartialEq, EnumCountMacro)]
-enum Selection {
+#[derive(PartialEq)]
+enum Move {
     Rock,
     Paper,
     Scissors,
+}
+
+impl Move {
+    fn score(&self) -> i32 {
+        match *self {
+            Move::Rock => 1,
+            Move::Paper => 2,
+            Move::Scissors => 3,
+        }
+    }
+
+    fn wins_to(&self) -> Move {
+        match *self {
+            Move::Rock => Move::Scissors,
+            Move::Paper => Move::Rock,
+            Move::Scissors => Move::Paper,
+        }
+    }
+
+    fn loses_to(&self) -> Move {
+        match *self {
+            Move::Rock => Move::Paper,
+            Move::Paper => Move::Scissors,
+            Move::Scissors => Move::Rock,
+        }
+    }
 }
 
 enum Outcome {
@@ -16,22 +40,15 @@ enum Outcome {
     Draw,
 }
 
-/* These are indexed by Selection values */
-const SCORE: [i32; Selection::COUNT] = [1, 2, 3];
-const BEATS: [Selection; Selection::COUNT] =
-    [Selection::Scissors, Selection::Rock, Selection::Paper];
-const LOSES: [Selection; Selection::COUNT] =
-    [Selection::Paper, Selection::Scissors, Selection::Rock];
-
 #[inline(always)]
-fn parse_selection(character: char) -> Selection {
+fn parse_selection(character: char) -> Move {
     match character {
-        'A' => Selection::Rock,
-        'B' => Selection::Paper,
-        'C' => Selection::Scissors,
-        'X' => Selection::Rock,
-        'Y' => Selection::Paper,
-        'Z' => Selection::Scissors,
+        'A' => Move::Rock,
+        'B' => Move::Paper,
+        'C' => Move::Scissors,
+        'X' => Move::Rock,
+        'Y' => Move::Paper,
+        'Z' => Move::Scissors,
         _ => panic!("bad input!"),
     }
 }
@@ -51,13 +68,12 @@ fn part1(input: &Vec<String>) -> i32 {
         let chars: Vec<char> = line.as_str().chars().collect();
         let opponent_move = parse_selection(chars[0]);
         let my_move = parse_selection(chars[2]);
-        let my_index = my_move as usize;
-        if BEATS[my_index] == opponent_move {
-            acc + SCORE[my_index] + 6
+        if my_move.wins_to() == opponent_move {
+            acc + my_move.score() + 6
         } else if opponent_move == my_move {
-            acc + SCORE[my_index] + 3
+            acc + my_move.score() + 3
         } else {
-            acc + SCORE[my_index]
+            acc + my_move.score()
         }
     })
 }
@@ -66,17 +82,10 @@ fn part2(input: &Vec<String>) -> i32 {
     input.into_iter().fold(0, |acc, line| {
         let chars: Vec<char> = line.as_str().chars().collect();
         let opponent_move = parse_selection(chars[0]);
-        let opponent_index = opponent_move as usize;
         match parse_outcome(chars[2]) {
-            Outcome::Win => {
-                let index = LOSES[opponent_index] as usize;
-                acc + SCORE[index] + 6
-            }
-            Outcome::Draw => acc + SCORE[opponent_index] + 3,
-            Outcome::Lose => {
-                let index = BEATS[opponent_index] as usize;
-                acc + SCORE[index]
-            }
+            Outcome::Win => acc + opponent_move.loses_to().score() + 6,
+            Outcome::Draw => acc + opponent_move.score() + 3,
+            Outcome::Lose => acc + opponent_move.wins_to().score(),
         }
     })
 }

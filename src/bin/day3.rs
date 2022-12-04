@@ -31,7 +31,7 @@ fn part1(input: &Vec<String>) -> i32 {
 
 fn part2(input: &Vec<String>) -> i32 {
     let mut priorities = 0;
-    let mut chunks = input.as_slice().chunks(3);
+    let mut chunks = input.chunks(3);
     while let Some([elf1, elf2, elf3]) = chunks.next() {
         let elf1_set: HashSet<_> = elf1.chars().collect();
         let elf2_set: HashSet<_> = elf2.chars().collect();

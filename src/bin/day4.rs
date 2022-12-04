@@ -5,11 +5,12 @@ fn pairs(string: &String) -> ((i32, i32), (i32, i32)) {
     let nums: Vec<i32> = string
         .as_str()
         .split(&['-', ','])
-        .map(|p| p.parse().unwrap())
+        .map(str::parse)
+        .map(Result::unwrap)
         .collect();
     match nums.chunks(4).next() {
         Some([a, b, c, d]) => ((*a, *b), (*c, *d)),
-        _ => panic!(),
+        _ => panic!("bad input, expecting: #-#,#-#"),
     }
 }
 

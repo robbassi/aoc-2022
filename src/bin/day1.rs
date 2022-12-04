@@ -70,7 +70,7 @@ fn part2v2(input: &Vec<String>, k: usize) -> i32 {
 }
 
 fn main() {
-    let input: Vec<String> = io::stdin().lock().lines().map(|l| l.unwrap()).collect();
+    let input: Vec<String> = io::stdin().lock().lines().map(Result::unwrap).collect();
     println!("part 1 = {}", part1(&input));
     println!("part 2 = {}", part2(&input));
     println!("part 2v2 = {}", part2v2(&input, 3));

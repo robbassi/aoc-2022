@@ -18,7 +18,7 @@ impl Priority for char {
 
 fn part1(input: &Vec<String>) -> i32 {
     input.into_iter().fold(0, |priorities, line| {
-        let chars = line.as_str().chars();
+        let chars = line.chars();
         let common_item = {
             let half = line.len() / 2;
             let comp1: HashSet<_> = chars.clone().take(half).collect();
@@ -30,26 +30,26 @@ fn part1(input: &Vec<String>) -> i32 {
 }
 
 fn part2(input: &Vec<String>) -> i32 {
-    let mut i = 0;
     let mut priorities = 0;
-    while i < input.len() {
-        let elf1: HashSet<_> = input[i].as_str().chars().collect();
-        let elf2: HashSet<_> = input[i + 1].as_str().chars().collect();
-        let common_items: HashSet<_> = elf1.intersection(&elf2).copied().collect();
+    let mut chunks = input.as_slice().chunks(3);
+    while let Some([elf1, elf2, elf3]) = chunks.next() {
+        let elf1_set: HashSet<_> = elf1.chars().collect();
+        let elf2_set: HashSet<_> = elf2.chars().collect();
+        let common_items: HashSet<_> =
+            elf1_set.intersection(&elf2_set).copied().collect();
         // we don't have to build a set for elf3
-        for item in input[i + 2].as_str().chars() {
+        for item in elf3.chars() {
             if common_items.contains(&item) {
                 priorities += item.priority();
                 break;
             }
         }
-        i += 3;
     }
     priorities
 }
 
 fn main() {
-    let input: Vec<String> = io::stdin().lock().lines().map(|l| l.unwrap()).collect();
+    let input: Vec<String> = io::stdin().lock().lines().map(Result::unwrap).collect();
     println!("part 1 = {}", part1(&input));
     println!("part 2 = {}", part2(&input));
 }

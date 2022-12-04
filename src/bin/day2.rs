@@ -101,7 +101,7 @@ fn part2(input: &Vec<String>) -> i32 {
 }
 
 fn main() {
-    let input: Vec<String> = io::stdin().lock().lines().map(|l| l.unwrap()).collect();
+    let input: Vec<String> = io::stdin().lock().lines().map(Result::unwrap).collect();
     println!("part 1 = {}", part1(&input));
     println!("part 2 = {}", part2(&input));
 }

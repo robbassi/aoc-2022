@@ -35,8 +35,7 @@ fn part2(input: &Vec<String>) -> i32 {
     while let Some([elf1, elf2, elf3]) = chunks.next() {
         let elf1_set: HashSet<_> = elf1.chars().collect();
         let elf2_set: HashSet<_> = elf2.chars().collect();
-        let common_items: HashSet<_> =
-            elf1_set.intersection(&elf2_set).copied().collect();
+        let common_items: HashSet<_> = elf1_set.intersection(&elf2_set).copied().collect();
         // we don't have to build a set for elf3
         for item in elf3.chars() {
             if common_items.contains(&item) {

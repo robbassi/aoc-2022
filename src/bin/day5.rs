@@ -8,28 +8,30 @@ use std::io::BufRead;
     [Z] [M] [P]
      1   2   3
 */
-fn parse_crates(input: &Vec<&String>) -> Vec<VecDeque<char>> {
+type Crates = Vec<VecDeque<char>>;
+
+fn parse_crates(input: &Vec<&String>) -> Crates {
     let line_len = input[0].len();
-    let n_vecs = (line_len + 1) / 4;
-    let mut vecs: Vec<VecDeque<char>> = Vec::new();
-    for _ in 0..n_vecs {
-        vecs.push(VecDeque::new());
+    let n_stacks = (line_len + 1) / 4;
+    let mut crates = Vec::new();
+    for _ in 0..n_stacks {
+        crates.push(VecDeque::new());
     }
     for line in input {
         let mut chars = line.chars();
         match chars.nth(1) {
-            Some(c) if c.is_ascii_alphabetic() => vecs[0].push_back(c),
+            Some(c) if c.is_ascii_alphabetic() => crates[0].push_back(c),
             Some(d) if d.is_ascii_digit() => break,
             _ => (), // pass,
         }
-        for i in 1..n_vecs {
+        for i in 1..n_stacks {
             match chars.nth(3) {
-                Some(c) if c.is_ascii_alphabetic() => vecs[i].push_back(c),
+                Some(c) if c.is_ascii_alphabetic() => crates[i].push_back(c),
                 _ => (), // pass,
             }
         }
     }
-    vecs
+    crates
 }
 
 #[derive(Debug)]
@@ -39,7 +41,7 @@ struct Move {
     dest: usize,
 }
 
-fn parse_operations(input: &Vec<&String>) -> Vec<Move> {
+fn parse_moves(input: &Vec<&String>) -> Vec<Move> {
     input.iter().fold(Vec::new(), |mut ops, line| {
         let lexemes: Vec<&str> = line.as_str().split(" ").collect();
         match lexemes.as_slice() {
@@ -54,7 +56,7 @@ fn parse_operations(input: &Vec<&String>) -> Vec<Move> {
     })
 }
 
-fn parse_input(input: &Vec<String>) -> (Vec<VecDeque<char>>, Vec<Move>) {
+fn parse_input(input: &Vec<String>) -> (Crates, Vec<Move>) {
     let crate_input: Vec<&String> = input
         .iter()
         .take_while(|line| line.as_str() != "")
@@ -64,10 +66,10 @@ fn parse_input(input: &Vec<String>) -> (Vec<VecDeque<char>>, Vec<Move>) {
         .skip_while(|line| line.as_str() != "")
         .skip(1)
         .collect();
-    (parse_crates(&crate_input), parse_operations(&ops_input))
+    (parse_crates(&crate_input), parse_moves(&ops_input))
 }
 
-fn top_of_crates(crates: &Vec<VecDeque<char>>) -> String {
+fn top_of_crates(crates: &Crates) -> String {
     crates.iter().map(|c| c[0]).collect()
 }
 
@@ -75,8 +77,8 @@ fn part1(input: &Vec<String>) -> String {
     let (mut crates, moves) = parse_input(input);
     for Move { n, src, dest } in moves {
         for _ in 0..n {
-            let x = crates[src - 1].pop_front().unwrap();
-            crates[dest - 1].push_front(x);
+            let c = crates[src - 1].pop_front().unwrap();
+            crates[dest - 1].push_front(c);
         }
     }
     top_of_crates(&crates)
@@ -85,12 +87,12 @@ fn part1(input: &Vec<String>) -> String {
 fn part2(input: &Vec<String>) -> String {
     let (mut crates, moves) = parse_input(input);
     for Move { n, src, dest } in moves {
-        let mut xs = VecDeque::new();
+        let mut cs = VecDeque::new();
         for _ in 0..n {
-            xs.push_front(crates[src - 1].pop_front().unwrap());
+            cs.push_front(crates[src - 1].pop_front().unwrap());
         }
-        for x in xs {
-            crates[dest - 1].push_front(x);
+        for c in cs {
+            crates[dest - 1].push_front(c);
         }
     }
     top_of_crates(&crates)

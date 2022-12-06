@@ -4,11 +4,9 @@ use std::io::BufRead;
 
 /*
         [D]
-    [N] [C]
+    [N] [C]      =>  [['N', 'Z'], ['D', 'C', 'M'], ['P']]
     [Z] [M] [P]
      1   2   3
-
-     => [['N', 'Z'], ['D', 'C', 'M'], ['P']]
 */
 fn parse_crates(input: &Vec<&String>) -> Vec<VecDeque<char>> {
     let line_len = input[0].len();
@@ -18,17 +16,17 @@ fn parse_crates(input: &Vec<&String>) -> Vec<VecDeque<char>> {
         vecs.push(VecDeque::new());
     }
     for line in input {
-        let mut i: usize = 1;
-        let chars: Vec<char> = line.chars().collect();
-        if chars[i] == '1' {
-            break;
+        let mut chars = line.chars();
+        match chars.nth(1) {
+            Some(c) if c.is_ascii_alphabetic() => vecs[0].push_back(c),
+            Some(d) if d.is_ascii_digit() => break,
+            _ => (), // pass,
         }
-        while i < line_len {
-            match chars[i] {
-                ' ' => (),
-                a => vecs[i / 4].push_back(a),
+        for i in 1..n_vecs {
+            match chars.nth(3) {
+                Some(c) if c.is_ascii_alphabetic() => vecs[i].push_back(c),
+                _ => (), // pass,
             }
-            i += 4;
         }
     }
     vecs

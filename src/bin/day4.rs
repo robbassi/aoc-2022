@@ -1,5 +1,4 @@
-use std::io;
-use std::io::BufRead;
+use aoc;
 
 fn pairs(string: &String) -> ((i32, i32), (i32, i32)) {
     let nums: Vec<i32> = string
@@ -31,7 +30,7 @@ fn part2(input: &Vec<String>) -> i32 {
 }
 
 fn main() {
-    let input: Vec<String> = io::stdin().lock().lines().map(Result::unwrap).collect();
+    let input: Vec<String> = aoc::io::read_input();
     println!("part 1 = {}", part1(&input));
     println!("part 2 = {}", part2(&input));
 }

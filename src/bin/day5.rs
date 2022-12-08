@@ -1,6 +1,6 @@
+use aoc::io::*;
+use aoc::result::*;
 use std::collections::VecDeque;
-use std::io;
-use std::io::BufRead;
 
 /*
         [D]
@@ -10,7 +10,7 @@ use std::io::BufRead;
 */
 type Crates = Vec<VecDeque<char>>;
 
-fn parse_crates(input: &Vec<&String>) -> Crates {
+fn parse_crates(input: &Vec<&String>) -> AocResult<Crates> {
     let line_len = input[0].len();
     let n_stacks = (line_len + 1) / 4;
     let mut crates = Vec::new();
@@ -31,7 +31,7 @@ fn parse_crates(input: &Vec<&String>) -> Crates {
             }
         }
     }
-    crates
+    Ok(crates)
 }
 
 #[derive(Debug)]
@@ -41,22 +41,25 @@ struct Move {
     dest: usize,
 }
 
-fn parse_moves(input: &Vec<&String>) -> Vec<Move> {
-    input.iter().fold(Vec::new(), |mut ops, line| {
+fn parse_moves(input: &Vec<&String>) -> AocResult<Vec<Move>> {
+    input.iter().fold(Ok(Vec::new()), |ops, line| {
+        let mut ops = ops?;
         let lexemes: Vec<&str> = line.as_str().split(" ").collect();
         match lexemes.as_slice() {
-            ["move", n, "from", src, "to", dest] => ops.push(Move {
-                n: n.parse().unwrap(),
-                src: src.parse().unwrap(),
-                dest: dest.parse().unwrap(),
-            }),
-            _ => panic!("Expecting move # from # to #"),
+            ["move", n, "from", src, "to", dest] => {
+                ops.push(Move {
+                    n: n.parse().lift()?,
+                    src: src.parse().lift()?,
+                    dest: dest.parse().lift()?,
+                });
+                Ok(ops)
+            }
+            _ => return parse_error(line.to_string(), "move # from # to #".into()),
         }
-        ops
     })
 }
 
-fn parse_input(input: &Vec<String>) -> (Crates, Vec<Move>) {
+fn parse_input(input: &Vec<String>) -> AocResult<(Crates, Vec<Move>)> {
     let crate_input: Vec<&String> = input
         .iter()
         .take_while(|line| line.as_str() != "")
@@ -66,40 +69,40 @@ fn parse_input(input: &Vec<String>) -> (Crates, Vec<Move>) {
         .skip_while(|line| line.as_str() != "")
         .skip(1)
         .collect();
-    (parse_crates(&crate_input), parse_moves(&ops_input))
+    Ok((parse_crates(&crate_input)?, parse_moves(&ops_input)?))
 }
 
 fn top_of_crates(crates: &Crates) -> String {
     crates.iter().map(|c| c[0]).collect()
 }
 
-fn part1(input: &Vec<String>) -> String {
-    let (mut crates, moves) = parse_input(input);
+fn part1(input: &Vec<String>) -> AocResult<String> {
+    let (mut crates, moves) = parse_input(input)?;
     for Move { n, src, dest } in moves {
         for _ in 0..n {
-            let c = crates[src - 1].pop_front().unwrap();
+            let c = crates[src - 1].pop_front().lift()?;
             crates[dest - 1].push_front(c);
         }
     }
-    top_of_crates(&crates)
+    Ok(top_of_crates(&crates))
 }
 
-fn part2(input: &Vec<String>) -> String {
-    let (mut crates, moves) = parse_input(input);
+fn part2(input: &Vec<String>) -> AocResult<String> {
+    let (mut crates, moves) = parse_input(input)?;
     for Move { n, src, dest } in moves {
         let mut cs = VecDeque::new();
         for _ in 0..n {
-            cs.push_front(crates[src - 1].pop_front().unwrap());
+            cs.push_front(crates[src - 1].pop_front().lift()?);
         }
         for c in cs {
             crates[dest - 1].push_front(c);
         }
     }
-    top_of_crates(&crates)
+    Ok(top_of_crates(&crates))
 }
 
 fn main() {
-    let input: Vec<String> = io::stdin().lock().lines().map(Result::unwrap).collect();
-    println!("part 1 = {}", part1(&input));
-    println!("part 2 = {}", part2(&input));
+    let input: Vec<String> = read_input();
+    println!("part 1 = {:?}", part1(&input).unwrap());
+    println!("part 2 = {:?}", part2(&input).unwrap());
 }

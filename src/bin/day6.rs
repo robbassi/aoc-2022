@@ -1,8 +1,8 @@
+use aoc;
+use aoc::result::*;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
-use std::io;
-use std::io::BufRead;
 
 fn first_unique_window(input: &String, n: usize) -> Option<usize> {
     let windows = input.as_bytes().windows(n);
@@ -15,7 +15,7 @@ fn first_unique_window(input: &String, n: usize) -> Option<usize> {
     None
 }
 
-fn first_unique_window_linear(input: &String, n: usize) -> Option<usize> {
+fn first_unique_window_linear(input: &String, n: usize) -> AocResult<usize> {
     let mut queue: VecDeque<u8> = input.bytes().take(n).collect();
     let mut freq = HashMap::<u8, usize>::new();
     for c in input.bytes().take(n) {
@@ -23,9 +23,9 @@ fn first_unique_window_linear(input: &String, n: usize) -> Option<usize> {
     }
     for (i, c) in input.bytes().skip(n).enumerate() {
         if freq.len() == n {
-            return Some(i + n);
+            return Ok(i + n);
         }
-        let last = queue.pop_front().unwrap();
+        let last = queue.pop_front().lift()?;
         // decrement
         freq.entry(last).and_modify(|c| *c -= 1);
         // remove if last
@@ -36,12 +36,12 @@ fn first_unique_window_linear(input: &String, n: usize) -> Option<usize> {
         freq.entry(c).and_modify(|c| *c += 1).or_insert(1);
         queue.push_back(c);
     }
-    None
+    Err("Not found").lift()
 }
 
 fn main() {
-    let input: Vec<String> = io::stdin().lock().lines().map(Result::unwrap).collect();
-    println!("part 1 = {}", first_unique_window(&input[0], 4).unwrap());
+    let input: Vec<String> = aoc::io::read_input();
+    println!("part 1 = {:?}", first_unique_window(&input[0], 4).unwrap());
     println!(
         "part 2 = {}",
         first_unique_window_linear(&input[0], 14).unwrap()

@@ -15,12 +15,20 @@ impl Instruction {
     }
 }
 
+// An executbale program
 #[derive(Debug)]
 struct Program {
+    // current register value
     register: i32,
+    // the current cycle
+    cycle: i32,
+    // the program counter
     counter: usize,
+    // number of cycles until current instruction completes
     delay: usize,
+    // true when the program is finished executing
     done: bool,
+    // the program instructions
     instructions: Vec<Instruction>,
 }
 
@@ -28,6 +36,7 @@ impl Program {
     fn new(instructions: Vec<Instruction>) -> Program {
         Program {
             register: 1,
+            cycle: 1,
             counter: 0,
             delay: instructions[0].cycles(),
             done: false,
@@ -57,6 +66,8 @@ impl Program {
                 self.done = true;
             }
         }
+        // increment the cycle
+        self.cycle += 1;
     }
 }
 
@@ -77,33 +88,29 @@ fn parse_instructions(input: &Vec<String>) -> Vec<Instruction> {
 
 fn part1(instructions: Vec<Instruction>) -> i32 {
     let mut program = Program::new(instructions);
-    let mut cycle = 1;
     let mut signal_strength = 0;
     while !program.done {
-        if cycle == 20 || (cycle > 20 && (cycle - 20) % 40 == 0) {
-            signal_strength += program.register * cycle;
+        if program.cycle == 20 || (program.cycle > 20 && (program.cycle - 20) % 40 == 0) {
+            signal_strength += program.register * program.cycle;
         }
         program.step();
-        cycle += 1;
     }
     signal_strength
 }
 
 fn part2(instructions: Vec<Instruction>) {
     let mut program = Program::new(instructions);
-    let mut cycle = 1;
     while !program.done {
-        let col = (cycle - 1) % 40;
+        let col = (program.cycle - 1) % 40;
         if program.register - 1 <= col && col <= program.register + 1 {
             print!("#");
         } else {
             print!(".");
         }
-        program.step();
-        if cycle % 40 == 0 {
+        if program.cycle % 40 == 0 {
             println!();
         }
-        cycle += 1;
+        program.step();
     }
 }
 

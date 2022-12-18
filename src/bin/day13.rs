@@ -33,24 +33,6 @@ impl PartialOrd for Packet {
     }
 }
 
-fn packet_to_string(packet: &Packet) -> String {
-    match packet {
-        Packet::Int(n) => return format!("{n}"),
-        Packet::List(list) => {
-            let mut list_str: String = "[".to_owned();
-            for (i, item) in list.iter().enumerate() {
-                let item_str = packet_to_string(item);
-                if i > 0 {
-                    list_str.push_str(",");
-                }
-                list_str.push_str(&item_str);
-            }
-            list_str.push_str("]");
-            return list_str;
-        }
-    }
-}
-
 fn parse_packet(input: &str) -> Result<Packet, String> {
     let tokens = input.chars();
     let mut stack = Vec::<Vec<Packet>>::new();
@@ -109,14 +91,6 @@ fn parse_pairs(input: &Vec<String>) -> Vec<(Packet, Packet)> {
         .map(|pair| {
             let a = parse_packet(pair[0]).expect("failed to parse first item in pair");
             let b = parse_packet(pair[1]).expect("failed to parse second item in pair");
-            let pair_a_str = packet_to_string(&a);
-            let pair_b_str = packet_to_string(&b);
-            if pair_a_str != pair[0] {
-                panic!("roundtrip failed: {}\n{}", pair[0], pair_a_str);
-            }
-            if pair_b_str != pair[1] {
-                panic!("roundtrip failed: {}\n{}", pair[1], pair_b_str);
-            }
             (a, b)
         })
         .collect()
